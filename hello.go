@@ -14,13 +14,12 @@ func main() {
 		fmt.Println("Monitorando...")
 	case 2:
 		fmt.Println("Exibindo Logs...")
-	case 3:
+	case 0:
 		fmt.Println("Saindo do programa...")
 		os.Exit(0)
 
 	default:
 		fmt.Println("Não conheço este comando")
-		fmt.Println("Saindo do programa...")
 	}
 }
 
