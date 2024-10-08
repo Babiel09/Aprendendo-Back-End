@@ -11,6 +11,8 @@ import (
 var siteses = []string{""}
 var site string
 
+const medidaTempo int = 5
+
 func main() {
 
 	for {
@@ -60,28 +62,30 @@ func monitorarSite() {
 	fmt.Scan(&site)
 	siteses = append(siteses, site)
 	fmt.Println("Monitorando...")
-	res, _ := http.Get(site)
-	if res.StatusCode == 200 {
-		fmt.Println("O site *", site, "* está no ar")
-	} else {
-		fmt.Println("Deu um erro absurdo, verifique se o site está no ar ou se ele existe!")
-		fmt.Println(res.StatusCode)
+	res, err := http.Get(site)
+	pegarErro()
+
+	fmt.Println("Você fez um monitoramento desse(s) site(s): *", siteses, "*")
+	if err != nil {
+		fmt.Println("Ocorreu um erro, virifique a url do site:", err, res)
 	}
-
-	fmt.Println("Você fez um monitoramento desses sites: *", siteses, "*")
-
 }
 func repetirMonitoramento() {
 	monitorarSite()
 	for {
-		time.Sleep(4 * time.Second)
+		time.Sleep(time.Duration(medidaTempo) * time.Minute)
 		fmt.Println("Monitorando...")
-		res, _ := http.Get(site)
-		if res.StatusCode == 200 {
-			fmt.Println("O site *", site, "* está no ar")
-		} else {
-			fmt.Println("Deu um erro absurdo, verifique se o site está no ar ou se ele existe!")
-			fmt.Println(res.StatusCode)
-		}
+		pegarErro()
+	}
+}
+
+// Criando uma função para pegar um erro:
+func pegarErro() {
+	res, err := http.Get(site)
+	if err != nil {
+		fmt.Println("Ocorreu um erro inesperado: ", err, " verifique as informações da sua url.")
+	}
+	if res.StatusCode == 200 {
+		fmt.Println("O site *", site, "* está no ar")
 	}
 }
