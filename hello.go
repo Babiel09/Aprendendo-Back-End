@@ -4,6 +4,7 @@ import (
 	"fmt"      //FMT é o pacote básico do GOLang
 	"net/http" //O HTTP é para eu fazer requisições WEB
 	"os"       //O OS serve para eu fazer algo em relação ao sistema operacional do usuário
+	"strconv"
 	"time"
 )
 
@@ -23,8 +24,6 @@ func main() {
 		case 1:
 			monitorarSite()
 		case 2:
-			fmt.Println("Exibindo Logs...")
-		case 3:
 			repetirMonitoramento()
 		case 0:
 			fmt.Println("Ok, até mais")
@@ -40,8 +39,7 @@ func main() {
 // Função para perguntar o quê o usuário vai fazer
 func perguntarComando() {
 	fmt.Println("1- Iniciar Monitoramento")
-	fmt.Println("2- Exibir Logs")
-	fmt.Println("3- Teste mais robusto")
+	fmt.Println("2- Monitoramento mais robusto")
 	fmt.Println("0- Sair do Programa")
 	return
 }
@@ -66,17 +64,22 @@ func monitorarSite() {
 	pegarErro()
 
 	fmt.Println("Você fez um monitoramento desse(s) site(s): *", siteses, "*")
+	fucaoDeLog(site, true)
+	fmt.Println("Todos os sites que foram monitorados estão no arquivo 'log.txt'")
 	if err != nil {
 		fmt.Println("Ocorreu um erro, virifique a url do site:", err, res)
 	}
 }
 func repetirMonitoramento() {
 	monitorarSite()
+	fmt.Println("Monitorando...")
+	fmt.Println("Execute : 'CTRL + C' para interromper o script quando for necessário")
 	for {
 		time.Sleep(time.Duration(medidaTempo) * time.Minute)
-		fmt.Println("Monitorando...")
 		pegarErro()
+
 	}
+
 }
 
 // Criando uma função para pegar um erro:
@@ -88,4 +91,12 @@ func pegarErro() {
 	if res.StatusCode == 200 {
 		fmt.Println("O site *", site, "* está no ar")
 	}
+}
+func fucaoDeLog(site string, online bool) {
+	arquivo, err := os.OpenFile("log.txt", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
+	if err != nil {
+		fmt.Println(err)
+	}
+	arquivo.WriteString(site + " *site online: " + strconv.FormatBool(online) + "* " + "\n") //uso o "\n" para pular uma linha
+	arquivo.Close()
 }
